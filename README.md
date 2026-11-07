@@ -8,6 +8,12 @@ Point a fresh pi agent at this repo and it reproduces the whole environment: mod
 git clone https://github.com/haojun-mah/pi-setup ~/pi-setup && ~/pi-setup/install.sh
 ```
 
+The repo is private. On a machine without SSH keys or a saved token, clone it with `gh` instead, after `gh auth login`:
+
+```bash
+gh repo clone haojun-mah/pi-setup ~/pi-setup && ~/pi-setup/install.sh
+```
+
 ## One-shot from a bare machine
 
 Two paths, both idempotent and safe to re-run.
@@ -17,7 +23,6 @@ Two paths, both idempotent and safe to re-run.
 ```text
 Clone https://github.com/haojun-mah/pi-setup to ~/pi-setup, read AGENT_SETUP.md there, and set up my pi environment end to end. Ask me only for the SoCLaaS API key if it is not already in my environment.
 ```
-
 The agent reads `AGENT_SETUP.md`, runs `install.sh` with the right flags, handles the API key, runs `verify.sh`, and reports. The key is the one thing it cannot invent, so it asks once.
 
 **Path B: no agent.** Export the key, then run one command:
