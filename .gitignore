@@ -1,0 +1,12 @@
+# Nothing in agent/ is generated, but these can appear if someone runs the
+# scripts inside the repo.
+*.bak
+*.log
+.DS_Store
+node_modules/
+__pycache__/
+
+# Never commit a key, even by accident.
+.env
+.env.*
+*.key

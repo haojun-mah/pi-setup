@@ -1,0 +1,14 @@
+{
+  "defaultProvider": "soclaas",
+  "defaultModel": "x-test-2",
+  "defaultThinkingLevel": "xhigh",
+  "compaction": {
+    "enabled": true
+  },
+  "packages": [
+    "git:github.com/1broseidon/ketch",
+    "npm:billion-context",
+    "npm:pi-subagents",
+    "npm:@quintinshaw/pi-dynamic-workflows"
+  ]
+}
