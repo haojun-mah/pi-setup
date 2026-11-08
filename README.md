@@ -41,7 +41,7 @@ Everything goes to `~/.pi/agent` (or `$PI_CODING_AGENT_DIR` if that is set).
 
 | File | Contents |
 | --- | --- |
-| `settings.json` | `soclaas` as default provider, `x-test-2` as default model, `xhigh` thinking, compaction on, three package sources |
+| `settings.json` | `soclaas` as default provider, `x-test-2` as default model, `xhigh` thinking, compaction on, four package sources |
 | `models.json` | The `soclaas` provider: base URL `https://soclaas-api.comp.nus.edu.sg/v1`, OpenAI-compatible, key read from `$SOCLAAS_API_KEY`, eight real models plus four `x-test-*` routes with their `thinkingLevelMap` effort ceilings |
 | `pstack-models.md` | pstack's per-role model table. Every role maps to a soclaas slug, with the benchmark evidence for the pick in a trailing comment |
 | `mcp.json` | `playwright` MCP server, headless, 1280x720, isolated profile, absolute Chromium path rendered at install time |
@@ -52,6 +52,10 @@ Everything goes to `~/.pi/agent` (or `$PI_CODING_AGENT_DIR` if that is set).
 | `agents/pstack/CONVENTIONS.md` | The Cursor-to-pi translation table the skills are read against |
 | `agents/pstack/_generate.py` | The table that generates the agent files; not loaded as an agent |
 | `extensions/poteto-delegate/` | The `poteto_delegate` tool that launches those agents in a `pi` child process |
+
+The four package sources, installed by `install.sh`: `git:github.com/1broseidon/ketch` (web research), `npm:billion-context` (context compression), `npm:@quintinshaw/pi-dynamic-workflows` (scripted subagent workflows), and `git:github.com/haojun-mah/pi-computer-use` (a headed browser with a ghost cursor and a live view you can watch).
+
+Both `pi-computer-use` and the `playwright` MCP server in `mcp.json` drive a browser, and they are not duplicates. The MCP server is the headless, silent, accessibility-tree driver: no window, nothing on screen, ideal when nobody is looking. `pi-computer-use` is the visible one: a real window, an animated cursor, click ripples, and a stream to open in your own browser when you want to see what the agent is doing or take over by hand.
 
 Skipped on purpose: `sessions/` (35 MB), `npm/`, `git/` (package clones, re-fetched), `bin/` (`fd` and `rg` are re-downloaded by pi on demand), `auth.json` (empty anyway), `*.bak`, logs, mission journals.
 
@@ -82,7 +86,7 @@ Chromium is detected in `~/.cache/ms-playwright`, or anywhere `--chrome <path>` 
 ~/pi-setup/verify.sh
 ```
 
-Checks pi and its version, the agent directory, that every payload file arrived with no placeholder left, that the 13 advertised agents parse, that all three packages resolve, that `SOCLAAS_API_KEY` is set, that `pi --list-models` shows the soclaas models, and that a real `soclaas/x-test-2` request answers. The last check costs one tiny request; `--no-ping` skips it.
+Checks pi and its version, the agent directory, that every payload file arrived with no placeholder left, that the 13 advertised agents parse, that all four packages resolve, that `SOCLAAS_API_KEY` is set, that `pi --list-models` shows the soclaas models, and that a real `soclaas/x-test-2` request answers. The last check costs one tiny request; `--no-ping` skips it.
 
 ## Updating
 
