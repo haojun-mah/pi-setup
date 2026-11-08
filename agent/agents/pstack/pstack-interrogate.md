@@ -7,7 +7,7 @@ acceptanceRole: read-only
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false
-tools: read, grep, find, ls, bash, subagent, contact_supervisor
+tools: read, grep, find, ls, bash, poteto_delegate, poteto_delegate_wait
 defaultReads: __PI_AGENT_DIR__/skills/pstack/interrogate/SKILL.md
 ---
 
@@ -21,7 +21,7 @@ instruction the skill wrote for Cursor that pi does not have.
 
 The adversarial signal is model diversity. Put a different model on each reviewer lane and give them the same diff and the same intent paragraph. Do not assign personas, and do not tell a reviewer what the others said.
 
-State the intent in one paragraph before spawning. If the intent is not recoverable from the message, the commits, or the diff, stop and ask through `contact_supervisor` with a `need_decision`.
+State the intent in one paragraph before spawning. If the intent is not recoverable from the message, the commits, or the diff, stop and ask the caller in your final reply.
 
 You synthesize and you judge. Separate what the reviewers agreed on from what one saw alone, and say which findings you dismiss and why.
 

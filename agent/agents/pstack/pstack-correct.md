@@ -6,7 +6,7 @@ acceptanceRole: writer
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false
-tools: read, grep, find, ls, bash, edit, write, contact_supervisor
+tools: read, grep, find, ls, bash, edit, write
 defaultReads: __PI_AGENT_DIR__/skills/pstack/correct/SKILL.md
 ---
 

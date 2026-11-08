@@ -8,18 +8,18 @@ Each pstack skill has a matching agent here when the skill is a procedure worth 
 
 | The skill says | Do this instead |
 | --- | --- |
-| `Task` tool | `subagent` tool. One child per call, or `workflow` for a fan-out. |
-| `subagent_type: "generalPurpose"` | `worker` for a change, `scout` for a read-only slice, `poteto-agent` for a poteto-styled piece of code. |
+| `Task` tool | `poteto_delegate`. One child per call; pass `async: false` to get the result in the same turn, or omit it and collect the follow-up. |
+| `subagent_type: "generalPurpose"` | `poteto-agent` for a poteto-styled piece of work, `comment-sicko` for a comment audit. |
 | `subagent_type: "poteto-agent"` | The `poteto-agent` agent. |
 | `subagent_type: "comment-sicko"` | The `comment-sicko` agent. |
 | `subagent_type: "<skill name>"` | `pstack-<skill name>` when this agent set defines one, otherwise read that SKILL.md and do the step yourself. |
 | the **how** skill, the **arena** skill (a bold skill name in prose) | The delegate `pstack-how`, `pstack-arena`, and so on, when you need it as separate work. When the step is small, read `__PI_AGENT_DIR__/skills/pstack/how/SKILL.md` and do it yourself instead of paying for a child. |
 | `readonly: true` | An agent whose `acceptanceRole` is `read-only`, or your own restraint when you are the one reading. There is no per-call read-only flag. |
-| `run_in_background: true` | The default for `subagent` is async. Use `async: true` and collect with the completion notification. |
-| `run_in_background: false` | `async: false` on the `subagent` call. |
+| `run_in_background: true` | `poteto_delegate` is async by default. Keep the runId, do other work, and read the follow-up when it lands. |
+| `run_in_background: false` | `async: false` on the `poteto_delegate` call, or `poteto_delegate_wait` with the runId. |
 | `environment: "cloud"` / `environment: "local"` | There is no cloud worker. Everything runs locally in the child's cwd. Drop the field. |
 | `cloud_base_branch` | Drop it. A candidate runs in a git worktree off the current HEAD, or in `/tmp/arena-<slug>/candidate-<n>/`. |
-| `AskQuestion` / a question card | Plain text in your reply, or `contact_supervisor` with `need_decision` when you are a child that cannot continue. |
+| `AskQuestion` / a question card | Plain text in your reply and stop. You are a separate process; the caller reads your final message. There is no live channel back to the parent. |
 | `update_state` | Nothing. Write the state into your reply and into the decision log. |
 | `~/.cursor/rules/pstack-models.mdc` | `__PI_AGENT_DIR__/pstack-models.md`. pi has no always-applied rule file, so that markdown table is read by absolute path. Children inherit the parent model when its role line is `auto` or `inherit-parent`, or when the role is absent. |
 | `.cursor/skills/<name>/` | `__PI_AGENT_DIR__/skills/<name>/`, and pstack's own skills under `__PI_AGENT_DIR__/skills/pstack/<name>/`. |
@@ -32,7 +32,7 @@ Each pstack skill has a matching agent here when the skill is a procedure worth 
 
 ## What the child has
 
-Tools are `read`, `grep`, `find`, `ls`, `bash`, plus `edit` and `write` when the agent is a writer, plus `subagent` when it orchestrates. `contact_supervisor` reaches the parent chat.
+Tools are `read`, `grep`, `find`, `ls`, `bash`, plus `edit` and `write` when the agent is a writer, plus `poteto_delegate` when it orchestrates. There is no `contact_supervisor`: a child is a separate process, and its final message is the whole conversation with the caller.
 
 Anything else in a skill, such as a Playwright browser or a Datadog MCP server, is not guaranteed to exist in a child. Check with `which` or a cheap probe before you plan around a tool, and record the skip instead of failing late.
 
@@ -48,7 +48,7 @@ One writer per file. When several children would touch the same tree, split the 
 
 State a model only when the caller configured one for that role. Never guess a slug from a model family; an unresolvable slug fails the launch.
 
-`workflow` is for fan-out with declared phases. Use it when the skill says "parallel workers", "one reviewer per model", or "one investigator per source". Otherwise a single `subagent` call is the cheaper route.
+A child can call `poteto_delegate` itself when it orchestrates, so fan-out is available at every level that lists the tool. Nesting is capped, so do not build a chain deeper than two.
 
 ## What this set does not cover
 

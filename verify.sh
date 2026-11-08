@@ -83,6 +83,25 @@ else
   fail "poteto agent definitions missing ($POTETO_AGENTS of 2)"
 fi
 
+# --- delegate extension
+EXT_DIR="$AGENT_DIR/extensions/poteto-delegate"
+if [[ -f "$EXT_DIR/index.ts" && -f "$EXT_DIR/agents.ts" && -f "$EXT_DIR/runner.ts" ]]; then
+  pass "poteto-delegate extension present"
+  if grep -q 'poteto_delegate' "$EXT_DIR/index.ts" 2>/dev/null; then
+    pass "poteto_delegate tool is registered"
+  else
+    fail "index.ts does not register poteto_delegate"
+  fi
+else
+  fail "extensions/poteto-delegate is incomplete (expect index.ts, agents.ts, runner.ts)"
+fi
+
+if [[ -d "$AGENT_DIR/agents/pstack" ]] && grep -rq 'subagent, contact_supervisor' "$AGENT_DIR/agents/pstack" 2>/dev/null; then
+  fail "agent files still name the removed subagent/contact_supervisor tools"
+else
+  pass "no agent names a removed tool"
+fi
+
 if [[ -f "$AGENT_DIR/skills/pstack/poteto-mode/SKILL.md" ]]; then
   pass "poteto-mode skill present"
   if grep -q '^disable-model-invocation: true' "$AGENT_DIR/skills/pstack/poteto-mode/SKILL.md"; then
@@ -95,18 +114,26 @@ else
 fi
 
 # --- portability
-LEFT=$(grep -rl '__PI_AGENT_DIR__\|__PLAYWRIGHT_CHROME__' "$AGENT_DIR" 2>/dev/null | wc -l | tr -d ' ')
+# Machine-local trees hold transcripts and package clones that were never part of
+# the payload, so they are excluded: a placeholder there is not an install bug.
+LEFT=$(grep -rl '__PI_AGENT_DIR__\|__PLAYWRIGHT_CHROME__' "$AGENT_DIR" \
+  --exclude-dir=sessions --exclude-dir=npm --exclude-dir=git \
+  --exclude-dir=missions --exclude-dir=node_modules 2>/dev/null | wc -l | tr -d ' ')
 if [[ "$LEFT" -eq 0 ]]; then
   pass "no unrendered placeholders"
 else
   fail "$LEFT files still contain placeholders (re-run install.sh)"
 fi
 
-HERE=$(grep -rl "/home/$(whoami)/" "$AGENT_DIR/skills" "$AGENT_DIR/agents" 2>/dev/null | wc -l | tr -d ' ')
-if [[ "$HERE" -eq 0 ]]; then
-  pass "no stale home paths"
+# A path rendered for a different machine points the skills at an agent directory
+# that does not exist here. Only `/home/<user>/.pi/agent` counts: other home paths
+# in the payload are test fixtures and example strings, not settings.
+STRAY=$(grep -rhoE '/home/[a-z0-9_-]+/\.pi/agent' "$AGENT_DIR/skills" "$AGENT_DIR/agents" 2>/dev/null \
+  | sort -u | grep -vx "/home/$(whoami)/.pi/agent" || true)
+if [[ -z "$STRAY" ]]; then
+  pass "no agent-directory path rendered for another user"
 else
-  fail "$HERE files reference /home/$(whoami)/ but were rendered elsewhere (re-run install.sh)"
+  fail "agent-dir paths for another user survived install: $(tr '\n' ' ' <<<"$STRAY")"
 fi
 
 # --- soclaas provider
@@ -132,7 +159,7 @@ fi
 
 # --- packages
 if command -v pi >/dev/null 2>&1; then
-  PKGS=$(pi list 2>/dev/null | grep -cE 'ketch|billion-context|pi-subagents|pi-dynamic-workflows' || true)
+  PKGS=$(pi list 2>/dev/null | grep -cE 'ketch|billion-context|pi-dynamic-workflows|pi-computer-use' || true)
   if [[ "${PKGS:-0}" -ge 4 ]]; then
     pass "all four packages resolve"
   else

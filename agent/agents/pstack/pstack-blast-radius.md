@@ -7,7 +7,7 @@ acceptanceRole: read-only
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false
-tools: read, grep, find, ls, bash, subagent, contact_supervisor
+tools: read, grep, find, ls, bash, poteto_delegate, poteto_delegate_wait
 defaultReads: __PI_AGENT_DIR__/skills/pstack/blast-radius/SKILL.md
 ---
 

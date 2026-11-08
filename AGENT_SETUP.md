@@ -101,7 +101,7 @@ Then one end-to-end smoke test, in a scratch directory:
 
 ```bash
 mkdir -p /tmp/pi-setup-smoke && cd /tmp/pi-setup-smoke
-pi -p "Name the subagents you have available whose description mentions poteto, in one line." 
+pi -p "Name the agents you have available whose description mentions poteto, in one line." 
 ```
 
 An answer that names `poteto-mode` and `poteto-agent` proves the advertisement reached the parent prompt: the catalog is injected from the agent files, not from the skill.
@@ -120,7 +120,7 @@ If something failed and you could not fix it, say which step and paste the error
 
 ## Reference: what is in the payload
 
-`settings.json` sets `soclaas` as the default provider, `x-test-2` as the default model, `xhigh` thinking, compaction on, and the four package sources (`git:github.com/1broseidon/ketch`, `npm:billion-context`, `npm:pi-subagents`, `npm:@quintinshaw/pi-dynamic-workflows`).
+`settings.json` sets `soclaas` as the default provider, `x-test-2` as the default model, `xhigh` thinking, compaction on, and the four package sources (`git:github.com/1broseidon/ketch`, `npm:billion-context`, `npm:@quintinshaw/pi-dynamic-workflows`, `git:github.com/haojun-mah/pi-computer-use`).
 
 `models.json` declares the `soclaas` provider: base URL `https://soclaas-api.comp.nus.edu.sg/v1`, `openai-completions`, `apiKey: "$SOCLAAS_API_KEY"`. Eight real models and four `x-test-*` routes, each with its context window, capabilities, and `thinkingLevelMap`. `x-test-1` and `x-test-2` map `xhigh` to `max`; `x-test-3` and `x-test-4` top out at `xhigh`. Aliases `coder`, `coding`, `default`, `ornith1.0:35b`, and `qwen3.6:27b` point at the sensible defaults.
 
@@ -128,7 +128,16 @@ If something failed and you could not fix it, say which step and paste the error
 
 `skills/pstack/` holds 58 skills. `poteto-mode` carries 23 playbooks, `references/bugbot-triage.md`, and the `scripts/` tooling (`watch-pr`, `orch`, `check-plan.mjs`) which bootstraps its own dependencies through bun from a checked-in `bun.lock`. The 22 `principle-*` leaves are what poteto mode cites. `arena`, `architect`, `swarm`, `interrogate`, `how`, `why`, `recall`, `reflect`, `teach`, `blast-radius`, `statechart`, `tdd`, `correct`, `unslop`, `no-comments`, and `setup-pstack` round it out.
 
-`agents/pstack/` holds 28 pi-subagents definitions. 13 carry `advertise: true`, which is the whole advertisement budget (16 entries, 12 KiB). Each wraps one skill with the pi launch contract, and `CONVENTIONS.md` holds the Cursor-to-pi translation the skills are read against. `_generate.py` regenerates them from a table and is not loaded as an agent.
+`agents/pstack/` holds 28 poteto agent definitions. 13 carry `advertise: true`, which is the whole advertisement budget (16 entries, 12 KiB). Each wraps one skill with the launch contract, and `CONVENTIONS.md` holds the Cursor-to-pi translation the skills are read against. `_generate.py` regenerates them from a table and is not loaded as an agent.
+
+`extensions/poteto-delegate/` is what makes those files callable. It registers `poteto_delegate`, `poteto_delegate_wait`, and `poteto_delegate_cancel`; `poteto_delegate` reads every `.md` under `agents/`, then spawns a `pi` child with that file's body as an appended system prompt and its `tools:` line as the child's `--tools` allowlist. Async by default, so the result arrives as a follow-up; `async: false` blocks for it. `pi-subagents` is not involved and not required.
+
+Two behaviours worth knowing, both verified against this pi:
+
+- A child inherits `BILLION_CONTEXT_PROXY`. When billion-context runs inline that value is the sentinel `http://billion-context.inline`, which a child process can never reach, so its ACP tools silently fail to register. The extension drops that variable for the child, which then arms its own lane.
+- `--tools` is an allowlist, so naming tools drops the four ACP compression tools. The extension appends `compress`, `decompress`, `search_context`, and `acp_status` to every child's list.
+
+Read-only is enforced by tool removal, not by policy: an agent with `acceptanceRole: read-only` never receives `edit` or `write`. It can still write through `bash` if its `tools:` line includes `bash`, which is the same limitation billion-context's restricted roles have.
 
 `mcp.json` adds the `playwright` MCP server, headless, 1280x720, isolated profile, with the absolute Chromium path rendered at install time.
 

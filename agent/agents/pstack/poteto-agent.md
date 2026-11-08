@@ -1,13 +1,13 @@
 ---
 name: poteto-agent
 aliases: poteto, potato-agent
-description: poteto-style delegate. Any work a poteto playbook step hands to a subagent.
+description: poteto-style delegate. Any work a poteto playbook step hands to another agent.
 advertise: true
 acceptanceRole: writer
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false
-tools: read, grep, find, ls, bash, edit, write, contact_supervisor
+tools: read, grep, find, ls, bash, edit, write
 defaultReads: __PI_AGENT_DIR__/skills/pstack/poteto-mode/SKILL.md
 defaultProgress: true
 ---

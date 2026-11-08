@@ -38,6 +38,10 @@ trap 'rm -rf "$STAGE"' EXIT
 
 cp -a "$SRC/skills" "$STAGE/skills"
 cp -a "$SRC/agents" "$STAGE/agents"
+# The poteto delegate extension: the tool layer that launches agents/*.md.
+if [[ -d "$SRC/extensions" ]]; then
+  cp -a "$SRC/extensions" "$STAGE/extensions"
+fi
 for f in settings.json models.json APPEND_SYSTEM.md pstack-models.md; do
   [[ -f "$SRC/$f" ]] && cp "$SRC/$f" "$STAGE/$f"
 done
@@ -138,5 +142,6 @@ log "Done"
 printf '  files      %s\n' "$(find "$REPO_DIR/agent" -type f | wc -l | tr -d ' ')"
 printf '  skills     %s\n' "$(find "$REPO_DIR/agent/skills" -name SKILL.md | wc -l | tr -d ' ')"
 printf '  agents     %s\n' "$(find "$REPO_DIR/agent/agents" -name '*.md' ! -name CONVENTIONS.md | wc -l | tr -d ' ')"
+printf '  extensions %s\n' "$(find "$REPO_DIR/agent/extensions" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')"
 printf '  size       %s\n' "$(du -sh "$REPO_DIR/agent" | cut -f1)"
 printf '\nReview the diff, then commit.\n'

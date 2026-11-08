@@ -48,9 +48,10 @@ Everything goes to `~/.pi/agent` (or `$PI_CODING_AGENT_DIR` if that is set).
 | `APPEND_SYSTEM.md` | `Always respond in English.` |
 | `skills/pstack/` | 58 pstack skills: `poteto-mode` (plus 23 playbooks and the `watch-pr` / `orch` / `bun` tooling), the 22 `principle-*` leaves, `arena`, `architect`, `swarm`, `interrogate`, `how`, `why`, `recall`, `reflect`, `teach`, `blast-radius`, `statechart`, `tdd`, `unslop`, `no-comments`, `setup-pstack`, and the rest |
 | `skills/reverse-engineer-anything/` | REA, with its reference bundle |
-| `agents/pstack/` | 28 pi-subagents definitions, 13 of them `advertise: true` |
+| `agents/pstack/` | 28 poteto agent definitions, 13 of them `advertise: true` |
 | `agents/pstack/CONVENTIONS.md` | The Cursor-to-pi translation table the skills are read against |
 | `agents/pstack/_generate.py` | The table that generates the agent files; not loaded as an agent |
+| `extensions/poteto-delegate/` | The `poteto_delegate` tool that launches those agents in a `pi` child process |
 
 Skipped on purpose: `sessions/` (35 MB), `npm/`, `git/` (package clones, re-fetched), `bin/` (`fd` and `rg` are re-downloaded by pi on demand), `auth.json` (empty anyway), `*.bak`, logs, mission journals.
 
@@ -63,7 +64,9 @@ The two things this repo exists to carry over, spelled out.
 **poteto as an agentic part.** `poteto-mode` exists twice on purpose:
 
 - `skills/pstack/poteto-mode/SKILL.md` is the procedure, its playbooks, and the report shape.
-- `agents/pstack/poteto-mode.md` and `agents/pstack/poteto-agent.md` are the pi-subagents definitions that make it a launchable, advertised delegate. `poteto-mode` orchestrates (it holds the `subagent` tool); `poteto-agent` is the worker other playbook steps hand code to. Both carry `advertise: true`, so they appear in the parent agent catalog as `poteto-mode` (`potato-mode`) and `poteto-agent` (`poteto`, `potato-agent`).
+- `agents/pstack/poteto-mode.md` and `agents/pstack/poteto-agent.md` are the delegate definitions that make it a launchable, advertised agent. `poteto-mode` orchestrates (it holds `poteto_delegate`); `poteto-agent` is the worker other playbook steps hand code to. Both carry `advertise: true`, so they appear in the parent agent catalog as `poteto-mode` (`potato-mode`) and `poteto-agent` (`poteto`, `potato-agent`).
+
+The agent files are inert on their own. `extensions/poteto-delegate/` is what turns them into tools: it reads every `.md` under `agents/`, and `poteto_delegate` spawns a `pi` child with that file's body appended as its system prompt and its `tools:` line as the child's allowlist. Nothing here depends on `pi-subagents`.
 
 The skill keeps `disable-model-invocation: true` so it is not thrown into context by description matching, which is how it was tuned. `install.sh` strips that line by default so the skill is also model-invocable; pass `--poteto-explicit` to keep it command-only (`/skill:poteto-mode`). Either way the agents stay advertised.
 

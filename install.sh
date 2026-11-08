@@ -215,7 +215,7 @@ BACKUP="$(dirname -- "$AGENT_DIR")/agent-backups/$STAMP"
 if [[ -d "$AGENT_DIR" ]] && [[ -n "$(ls -A "$AGENT_DIR" 2>/dev/null || true)" ]]; then
   log "Backing up the current agent directory"
   mkdir -p "$BACKUP"
-  for item in settings.json models.json mcp.json APPEND_SYSTEM.md pstack-models.md skills agents auth.json; do
+  for item in settings.json models.json mcp.json APPEND_SYSTEM.md pstack-models.md skills agents extensions auth.json; do
     [[ -e "$AGENT_DIR/$item" ]] && cp -a "$AGENT_DIR/$item" "$BACKUP/" || true
   done
   ok "$BACKUP"
@@ -238,17 +238,25 @@ install_file APPEND_SYSTEM.md
 install_file pstack-models.md
 
 if [[ $MERGE -eq 1 ]]; then
-  log "Merging skills and agents (existing files not in this repo are kept)"
-  mkdir -p "$AGENT_DIR/skills" "$AGENT_DIR/agents"
+  log "Merging skills, agents, and extensions (existing files not in this repo are kept)"
+  mkdir -p "$AGENT_DIR/skills" "$AGENT_DIR/agents" "$AGENT_DIR/extensions"
   cp -a "$PAYLOAD/skills/." "$AGENT_DIR/skills/"
   cp -a "$PAYLOAD/agents/." "$AGENT_DIR/agents/"
+  [[ -d "$PAYLOAD/extensions" ]] && cp -a "$PAYLOAD/extensions/." "$AGENT_DIR/extensions/"
 else
   rm -rf "$AGENT_DIR/skills" "$AGENT_DIR/agents"
   cp -a "$PAYLOAD/skills" "$AGENT_DIR/skills"
   cp -a "$PAYLOAD/agents"  "$AGENT_DIR/agents"
+  if [[ -d "$PAYLOAD/extensions" ]]; then
+    rm -rf "$AGENT_DIR/extensions"
+    cp -a "$PAYLOAD/extensions" "$AGENT_DIR/extensions"
+  fi
 fi
 ok "skills/ ($(find "$AGENT_DIR/skills" -name SKILL.md | wc -l | tr -d ' ') skills)"
 ok "agents/ ($(find "$AGENT_DIR/agents" -name '*.md' ! -name CONVENTIONS.md | wc -l | tr -d ' ') agent definitions)"
+if [[ -d "$AGENT_DIR/extensions" ]]; then
+  ok "extensions/ ($(find "$AGENT_DIR/extensions" -maxdepth 1 -mindepth 1 -type d | wc -l | tr -d ' ') extension packages)"
+fi
 ok "$(grep -rl '^advertise: true' "$AGENT_DIR/agents" 2>/dev/null | wc -l | tr -d ' ') advertised in the parent catalog"
 
 # poteto-mode frontmatter. The skill ships command-only on purpose; the agents

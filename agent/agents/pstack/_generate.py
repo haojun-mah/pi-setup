@@ -2,12 +2,15 @@
 # Not an agent. This is the table that generates the sibling *.md agent files;
 # discovery only reads .md files, so this one is never loaded as an agent.
 # Re-run after editing the table: python3 _generate.py
-"""Generate pi-subagents agent files for the pstack skills that run as delegates.
+"""Generate poteto agent files for the pstack skills that run as delegates.
 
 Each generated agent wraps one pstack SKILL.md. The skill stays the single source
-of procedure; the agent file adds the pi launch contract (tools, role, pointer)
-and the Cursor-to-pi translation. Skills that are inline style guidance rather
-than standalone procedures get no agent, on purpose.
+of procedure; the agent file adds the delegate launch contract (tools, role,
+pointer) and the Cursor-to-pi translation. Skills that are inline style guidance
+rather than standalone procedures get no agent, on purpose.
+
+These files are read by the `poteto_delegate` extension
+(`~/.pi/agent/extensions/poteto-delegate/`), which spawns a `pi` child per call.
 """
 
 import os
@@ -26,10 +29,10 @@ ADVERTISE = {
     "pstack-teach", "pstack-recall", "pstack-blast-radius", "pstack-figure-it-out",
 }
 
-READ = "read, grep, find, ls, bash, contact_supervisor"
-WRITE = "read, grep, find, ls, bash, edit, write, contact_supervisor"
-READ_ORCH = "read, grep, find, ls, bash, subagent, contact_supervisor"
-WRITE_ORCH = "read, grep, find, ls, bash, edit, write, subagent, contact_supervisor"
+READ = "read, grep, find, ls, bash"
+WRITE = "read, grep, find, ls, bash, edit, write"
+READ_ORCH = "read, grep, find, ls, bash, poteto_delegate, poteto_delegate_wait"
+WRITE_ORCH = "read, grep, find, ls, bash, edit, write, poteto_delegate, poteto_delegate_wait"
 
 # name, aliases, kind(skill|native), description, tools, acceptance role, extra frontmatter, notes
 AGENTS = [
@@ -37,7 +40,7 @@ AGENTS = [
         name="poteto-agent",
         kind="native",
         aliases=["poteto", "potato-agent"],
-        description="poteto-style delegate. Any work a poteto playbook step hands to a subagent.",
+        description="poteto-style delegate. Any work a poteto playbook step hands to another agent.",
         tools=WRITE,
         role="writer",
         reads=[f"{SKILL_ROOT}/poteto-mode/SKILL.md"],
@@ -135,7 +138,7 @@ Name the worker agent per lane: `worker` or `poteto-agent` for code, `scout` for
      READ_ORCH, "read-only", """
 The adversarial signal is model diversity. Put a different model on each reviewer lane and give them the same diff and the same intent paragraph. Do not assign personas, and do not tell a reviewer what the others said.
 
-State the intent in one paragraph before spawning. If the intent is not recoverable from the message, the commits, or the diff, stop and ask through `contact_supervisor` with a `need_decision`.
+State the intent in one paragraph before spawning. If the intent is not recoverable from the message, the commits, or the diff, stop and ask the caller in your final reply.
 
 You synthesize and you judge. Separate what the reviewers agreed on from what one saw alone, and say which findings you dismiss and why.
 

@@ -7,7 +7,7 @@ acceptanceRole: writer
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false
-tools: read, grep, find, ls, bash, edit, write, subagent, contact_supervisor
+tools: read, grep, find, ls, bash, edit, write, poteto_delegate, poteto_delegate_wait
 defaultReads: __PI_AGENT_DIR__/skills/pstack/arena/SKILL.md
 ---
 

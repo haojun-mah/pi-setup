@@ -6,7 +6,7 @@ acceptanceRole: read-only
 systemPromptMode: replace
 inheritProjectContext: true
 inheritSkills: false
-tools: read, grep, find, ls, bash, contact_supervisor
+tools: read, grep, find, ls, bash
 defaultReads: __PI_AGENT_DIR__/skills/pstack/poteto-help/SKILL.md
 ---
 
