@@ -41,7 +41,7 @@ Everything goes to `~/.pi/agent` (or `$PI_CODING_AGENT_DIR` if that is set).
 
 | File | Contents |
 | --- | --- |
-| `settings.json` | `soclaas` as default provider, `x-test-2` as default model, `xhigh` thinking, compaction on, four package sources |
+| `settings.json` | `soclaas` as default provider, `x-test-2` as default model, `xhigh` thinking, compaction on, three package sources |
 | `models.json` | The `soclaas` provider: base URL `https://soclaas-api.comp.nus.edu.sg/v1`, OpenAI-compatible, key read from `$SOCLAAS_API_KEY`, eight real models plus four `x-test-*` routes with their `thinkingLevelMap` effort ceilings |
 | `pstack-models.md` | pstack's per-role model table. Every role maps to a soclaas slug, with the benchmark evidence for the pick in a trailing comment |
 | `mcp.json` | `playwright` MCP server, headless, 1280x720, isolated profile, absolute Chromium path rendered at install time |
@@ -82,7 +82,7 @@ Chromium is detected in `~/.cache/ms-playwright`, or anywhere `--chrome <path>` 
 ~/pi-setup/verify.sh
 ```
 
-Checks pi and its version, the agent directory, that every payload file arrived with no placeholder left, that the 13 advertised agents parse, that all four packages resolve, that `SOCLAAS_API_KEY` is set, that `pi --list-models` shows the soclaas models, and that a real `soclaas/x-test-2` request answers. The last check costs one tiny request; `--no-ping` skips it.
+Checks pi and its version, the agent directory, that every payload file arrived with no placeholder left, that the 13 advertised agents parse, that all three packages resolve, that `SOCLAAS_API_KEY` is set, that `pi --list-models` shows the soclaas models, and that a real `soclaas/x-test-2` request answers. The last check costs one tiny request; `--no-ping` skips it.
 
 ## Updating
 

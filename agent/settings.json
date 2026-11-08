@@ -8,8 +8,7 @@
   "packages": [
     "git:github.com/1broseidon/ketch",
     "npm:billion-context",
-    "npm:@quintinshaw/pi-dynamic-workflows",
-    "git:github.com/haojun-mah/pi-computer-use"
+    "npm:@quintinshaw/pi-dynamic-workflows"
   ],
   "hideThinkingBlock": true
 }

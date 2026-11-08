@@ -2,7 +2,7 @@
 
 You are setting up a pi agent environment on this machine from the repo you were pointed at. This file is the runbook. Follow it in order and do not improvise around the checks.
 
-The end state: `~/.pi/agent` holds this environment, `pi` runs the `soclaas` provider, `soclaas/x-test-2` is the default model at `xhigh` thinking, the four packages are installed, 59 skills and 28 agent definitions are on disk, and the poteto playbook is reachable both as a skill and as an advertised delegate.
+The end state: `~/.pi/agent` holds this environment, `pi` runs the `soclaas` provider, `soclaas/x-test-2` is the default model at `xhigh` thinking, the three packages are installed, 59 skills and 28 agent definitions are on disk, and the poteto playbook is reachable both as a skill and as an advertised delegate.
 
 ## Rules for you, the setup agent
 
@@ -70,7 +70,7 @@ Add flags only for a reason named here:
 | They have their own browser binary | `--chrome PATH` |
 | They use a non-default agent dir | `--agent-dir PATH` or `PI_CODING_AGENT_DIR` |
 
-What the script does, in order: checks prerequisites, resolves the key, finds a Chromium for the playwright MCP server (and drops that server from `mcp.json` if there is none), backs up the existing `~/.pi/agent` to `~/.pi/agent-backups/<timestamp>/`, copies the payload, makes the poteto-mode skill model-invocable unless `--poteto-explicit`, renders the two path placeholders against this machine, runs `pi install` for each of the four package sources, and prints the summary.
+What the script does, in order: checks prerequisites, resolves the key, finds a Chromium for the playwright MCP server (and drops that server from `mcp.json` if there is none), backs up the existing `~/.pi/agent` to `~/.pi/agent-backups/<timestamp>/`, copies the payload, makes the poteto-mode skill model-invocable unless `--poteto-explicit`, renders the two path placeholders against this machine, runs `pi install` for each of the three package sources, and prints the summary.
 
 Read its output. Any `!!` line is a degradation you must report.
 
@@ -80,7 +80,7 @@ Read its output. Any `!!` line is a degradation you must report.
 ./verify.sh
 ```
 
-This checks pi and bun, the four payload files, the skill and agent counts, that exactly 13 agents are advertised, that `poteto-mode` and `poteto-agent` exist as definitions and the skill resolves, that no placeholder or stale home path survived, that the key is set, that `pi --list-models` sees the soclaas models, that all four packages resolve, and finally that a live `soclaas/x-test-2` request answers.
+This checks pi and bun, the four payload files, the skill and agent counts, that exactly 13 agents are advertised, that `poteto-mode` and `poteto-agent` exist as definitions and the skill resolves, that no placeholder or stale home path survived, that the key is set, that `pi --list-models` sees the soclaas models, that all three packages resolve, and finally that a live `soclaas/x-test-2` request answers.
 
 `--no-ping` skips the live request, which is the only check that costs tokens.
 
@@ -120,7 +120,7 @@ If something failed and you could not fix it, say which step and paste the error
 
 ## Reference: what is in the payload
 
-`settings.json` sets `soclaas` as the default provider, `x-test-2` as the default model, `xhigh` thinking, compaction on, and the four package sources (`git:github.com/1broseidon/ketch`, `npm:billion-context`, `npm:@quintinshaw/pi-dynamic-workflows`, `git:github.com/haojun-mah/pi-computer-use`).
+`settings.json` sets `soclaas` as the default provider, `x-test-2` as the default model, `xhigh` thinking, compaction on, and the three package sources (`git:github.com/1broseidon/ketch`, `npm:billion-context`, `npm:@quintinshaw/pi-dynamic-workflows`).
 
 `models.json` declares the `soclaas` provider: base URL `https://soclaas-api.comp.nus.edu.sg/v1`, `openai-completions`, `apiKey: "$SOCLAAS_API_KEY"`. Eight real models and four `x-test-*` routes, each with its context window, capabilities, and `thinkingLevelMap`. `x-test-1` and `x-test-2` map `xhigh` to `max`; `x-test-3` and `x-test-4` top out at `xhigh`. Aliases `coder`, `coding`, `default`, `ornith1.0:35b`, and `qwen3.6:27b` point at the sensible defaults.
 

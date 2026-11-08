@@ -43,7 +43,7 @@ Usage: ./install.sh [options]
       --chrome PATH      Use this Chromium binary for the playwright MCP server.
       --agent-dir PATH   Install into PATH instead of $PI_CODING_AGENT_DIR or
                          ~/.pi/agent.
-      --no-packages      Do not run `pi install` for the four package sources.
+      --no-packages      Do not run `pi install` for the three package sources.
       --no-mcp           Do not write mcp.json.
   -h, --help             Show this help.
 

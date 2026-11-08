@@ -159,11 +159,11 @@ fi
 
 # --- packages
 if command -v pi >/dev/null 2>&1; then
-  PKGS=$(pi list 2>/dev/null | grep -cE 'ketch|billion-context|pi-dynamic-workflows|pi-computer-use' || true)
-  if [[ "${PKGS:-0}" -ge 4 ]]; then
-    pass "all four packages resolve"
+  PKGS=$(pi list 2>/dev/null | grep -cE 'ketch|billion-context|pi-dynamic-workflows' || true)
+  if [[ "${PKGS:-0}" -ge 3 ]]; then
+    pass "all three packages resolve"
   else
-    fail "${PKGS:-0} of 4 packages resolve (run: pi update --extensions)"
+    fail "${PKGS:-0} of 3 packages resolve (run: pi update --extensions)"
   fi
 fi
 
