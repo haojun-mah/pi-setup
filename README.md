@@ -8,11 +8,7 @@ Point a fresh pi agent at this repo and it reproduces the whole environment: mod
 git clone https://github.com/haojun-mah/pi-setup ~/pi-setup && ~/pi-setup/install.sh
 ```
 
-The repo is private. On a machine without SSH keys or a saved token, clone it with `gh` instead, after `gh auth login`:
-
-```bash
-gh repo clone haojun-mah/pi-setup ~/pi-setup && ~/pi-setup/install.sh
-```
+The repo is public, so no authentication is needed to clone it. Note that `install.sh` will still need your own SoCLaaS API key — the repo never contains one.
 
 ## One-shot from a bare machine
 
