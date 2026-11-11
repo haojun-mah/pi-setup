@@ -1,6 +1,6 @@
 # pi-setup
 
-My personal [pi](https://pi.dev) agent environment, as a portable, one-shot installer.
+A portable, one-shot installer that reproduces a complete [pi](https://pi.dev) agent environment.
 
 Point a fresh pi agent at this repo and it reproduces the whole environment: model provider, default model, thinking level, packages, 59 skills, 28 agent definitions, the MCP server, and the surface system prompt. Nothing is hand-edited afterward.
 
@@ -8,7 +8,7 @@ Point a fresh pi agent at this repo and it reproduces the whole environment: mod
 git clone https://github.com/haojun-mah/pi-setup ~/pi-setup && ~/pi-setup/install.sh
 ```
 
-The repo is public, so no authentication is needed to clone it. Note that `install.sh` will still need your own SoCLaaS API key — the repo never contains one.
+`install.sh` needs a SoCLaaS API key. The repo never contains one, and the installer takes it from the environment, from `--key-file`, or from a hidden prompt.
 
 ## One-shot from a bare machine
 
@@ -17,7 +17,7 @@ Two paths, both idempotent and safe to re-run.
 **Path A: let the agent do it.** On the new machine, install pi (`npm install -g --ignore-scripts @earendil-works/pi-coding-agent`), start it anywhere, and paste:
 
 ```text
-Clone https://github.com/haojun-mah/pi-setup to ~/pi-setup, read AGENT_SETUP.md there, and set up my pi environment end to end. Ask me only for the SoCLaaS API key if it is not already in my environment.
+Clone https://github.com/haojun-mah/pi-setup to ~/pi-setup, read AGENT_SETUP.md there, and set up the pi environment end to end. Ask only for the SoCLaaS API key if it is not already in the environment.
 ```
 The agent reads `AGENT_SETUP.md`, runs `install.sh` with the right flags, handles the API key, runs `verify.sh`, and reports. The key is the one thing it cannot invent, so it asks once.
 
@@ -57,7 +57,7 @@ Skipped on purpose: `sessions/` (35 MB), `npm/`, `git/` (package clones, re-fetc
 
 ## The SoCLaaS settings and the poteto wiring
 
-The two things this repo exists to carry over, spelled out.
+The two pieces worth spelling out.
 
 **SoCLaaS.** `models.json` declares the provider and reads the key from `$SOCLAAS_API_KEY`. The key is never stored in this repo and never written to `auth.json`. `install.sh` takes it from the environment, from `--key-file`, or, when run interactively, from a hidden prompt; `--persist-key` appends one `export SOCLAAS_API_KEY=...` line to your shell rc if it is not already there. `pstack-models.md` then routes every pstack role through soclaas slugs, so the poteto skills and the soclaas provider are one decision, not two.
 
@@ -68,7 +68,7 @@ The two things this repo exists to carry over, spelled out.
 
 The agent files are inert on their own. `extensions/poteto-delegate/` is what turns them into tools: it reads every `.md` under `agents/`, and `poteto_delegate` spawns a `pi` child with that file's body appended as its system prompt and its `tools:` line as the child's allowlist. Nothing here depends on `pi-subagents`.
 
-The skill keeps `disable-model-invocation: true` so it is not thrown into context by description matching, which is how it was tuned. `install.sh` strips that line by default so the skill is also model-invocable; pass `--poteto-explicit` to keep it command-only (`/skill:poteto-mode`). Either way the agents stay advertised.
+The skill keeps `disable-model-invocation: true` so it is not thrown into context by description matching, which is the tuned behaviour. `install.sh` strips that line by default so the skill is also model-invocable; pass `--poteto-explicit` to keep it command-only (`/skill:poteto-mode`). Either way the agents stay advertised.
 
 ## Portability
 
